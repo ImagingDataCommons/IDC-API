@@ -21,8 +21,8 @@ from .cohort_utils import create_cohort_for_test_get_cohort_xxx, \
     find_v1_big_cohort_for_test_get_cohort_xxx
 
 
-# We can't create V1 cohorts so, find an existing V1 cohort that has the filters expected by this test
-def test_guid_v1(client, app):
+# We can't create V12 cohorts so, find an existing V2 cohort that has the filters expected by this test
+def test_guid_v2(client, app):
     filterSet = {
         "filters": {
             "BodyPartExamined": [
@@ -30,7 +30,7 @@ def test_guid_v1(client, app):
                 "BRAIN"
             ]
         },
-        "idc_data_version": "1.0"
+        "idc_data_version": "2.0"
     }
 
     (id, filterSet) = find_v1_cohort_for_test_get_cohort_xxx(client, filterSet)
@@ -52,7 +52,7 @@ def test_guid_v1(client, app):
     assert cohort['cohort_id']==id
 
     assert manifest['rowsReturned'] == 2000
-    assert manifest['totalFound'] == 802018
+    assert manifest['totalFound'] == 2427230
 
     next_page = response.json['next_page']
     assert next_page != ""
@@ -93,15 +93,14 @@ def test_guid_active(client, app):
     delete_cohort(client, id)
 
 
-def test_url_v1(client, app):
+def test_url_v2(client, app):
     filterSet = {
         "filters": {
-            "BodyPartExamined": [
-                "BLADDER",
-                "BRAIN"
+            "AnatomicRegionSequence": [
+                "T-42300:SRT"
             ]
         },
-        "idc_data_version": "1.0"
+        "idc_data_version": "2.0"
     }
 
     (id, filterSet) = find_v1_cohort_for_test_get_cohort_xxx(client, filterSet)
@@ -121,15 +120,16 @@ def test_url_v1(client, app):
 
     assert cohort['cohort_id']==id
 
-    assert manifest['rowsReturned'] == 2000
-    assert manifest['totalFound'] == 802018
+    assert manifest['rowsReturned'] == 60
+    assert manifest['totalFound'] == 60
 
     next_page = response.json['next_page']
-    assert next_page != ""
+    assert next_page == ""
 
     json_manifest = manifest['json_manifest']
-    assert len(json_manifest) == 2000
-    assert {'GCS_URL': 'gs://idc_dev/0000053b-bcd8-4697-9677-6710d7bbe0ec.dcm'} in json_manifest
+    assert len(json_manifest) == 60
+    urls = [i['GCS_URL'].rsplit('/')[-1] for i in json_manifest]
+    assert '0534ab60-7e5a-459a-9c80-b87d1590aedf.dcm' in urls
 
 
 def test_url_active(client, app):
@@ -159,19 +159,20 @@ def test_url_active(client, app):
     json_manifest = manifest['json_manifest']
     assert len(json_manifest) == 1638
     assert manifest['totalFound'] == 1638
-    assert {'GCS_URL': 'gs://idc_dev/0013f110-0928-4d66-ba61-7c3e80b48a68.dcm'} in json_manifest
+    urls = [i['GCS_URL'].rsplit('/')[-1] for i in json_manifest]
+    assert '0013f110-0928-4d66-ba61-7c3e80b48a68.dcm' in urls
 
     delete_cohort(client, id)
 
 
-def test_all_v1(client, app):
+def test_all_v2(client, app):
     filterSet = {
         "filters": {
           "AnatomicRegionSequence": [
             "T-42300:SRT"
           ]
         },
-        "idc_data_version": "1.0"
+        "idc_data_version": "2.0"
       }
 
     (id, filterSet) = find_v1_cohort_for_test_get_cohort_xxx(client, filterSet)
@@ -214,7 +215,7 @@ def test_all_v1(client, app):
     assert '1.3.6.1.4.1.14519.5.2.1.2744.7002.642123555147672466718059464827' in [row['StudyInstanceUID'] for row in json_manifest]
     assert 'qin_headneck' in [row['Collection_ID'] for row in json_manifest]
     assert '10.7937/K9/TCIA.2015.K0F5CGLI' in [row['Source_DOI'] for row in json_manifest]
-    assert next(row for row in json_manifest if row['GCS_URL'] == 'gs://idc_dev/0534ab60-7e5a-459a-9c80-b87d1590aedf.dcm')
+    assert next(row for row in json_manifest if row['GCS_URL'] == 'gs://idc-dev-redacted/0534ab60-7e5a-459a-9c80-b87d1590aedf.dcm')
     assert next(row for row in json_manifest if row['CRDC_Study_GUID'] == 'dg.4DFC/2a8ac373-9f08-420b-b497-939101d0124d')
     assert next(row for row in json_manifest if row['CRDC_Series_GUID'] == 'dg.4DFC/4a9a581a-465f-4503-9c47-f5691c8181d5')
     assert next(row for row in json_manifest if row['CRDC_Instance_GUID'] == 'dg.4DFC/0534ab60-7e5a-459a-9c80-b87d1590aedf')
@@ -262,7 +263,7 @@ def test_all_active(client, app):
     assert '1.3.6.1.4.1.14519.5.2.1.3671.4018.768291480177931556369061239508' in [row['StudyInstanceUID'] for row in json_manifest]
     assert 'tcga_read' in [row['Collection_ID'] for row in json_manifest]
     assert '10.7937/K9/TCIA.2016.F7PPNPNU' in [row['Source_DOI'] for row in json_manifest]
-    assert next(row for row in json_manifest if row['GCS_URL'] == 'gs://idc_dev/0013f110-0928-4d66-ba61-7c3e80b48a68.dcm')
+    assert next(row for row in json_manifest if row['GCS_URL'] == 'gs://idc-dev-open/0013f110-0928-4d66-ba61-7c3e80b48a68.dcm')
     assert next(row for row in json_manifest if row['CRDC_Study_GUID'] == 'dg.4DFC/7efeae5d-6263-4184-9ad4-8df22720ada9')
     assert next(row for row in json_manifest if row['CRDC_Series_GUID'] == 'dg.4DFC/67e22f90-36e1-40aa-88bb-9b2efb5616f2')
     assert next(row for row in json_manifest if row['CRDC_Instance_GUID'] == 'dg.4DFC/0013f110-0928-4d66-ba61-7c3e80b48a68')
@@ -270,7 +271,7 @@ def test_all_active(client, app):
     delete_cohort(client, id)
 
 
-def test_paged_guid_v1(client, app):
+def test_paged_guid_v2(client, app):
 
     filterSet = {
         "filters": {
@@ -279,7 +280,7 @@ def test_paged_guid_v1(client, app):
                 "Chest-abdomen-pelvis, Leg, Tspine"
             ]
         },
-        "idc_data_version": "1.0"
+        "idc_data_version": "2.0"
     }
 
     (id, filterSet) = find_v1_cohort_for_test_get_cohort_xxx(client, filterSet)
@@ -393,7 +394,7 @@ def test_paged_guid_active(client, app):
     delete_cohort(client, id)
 
 
-def test_paged_url_v1(client, app):
+def test_paged_url_v2(client, app):
     filterSet = {
         "filters": {
             "tcia_tumorLocation": [
@@ -401,7 +402,7 @@ def test_paged_url_v1(client, app):
                 "Chest-abdomen-pelvis, Leg, Tspine"
             ]
         },
-        "idc_data_version": "1.0"
+        "idc_data_version": "2.0"
     }
 
     (id, filterSet) = find_v1_cohort_for_test_get_cohort_xxx(client, filterSet)
@@ -452,7 +453,7 @@ def test_paged_url_v1(client, app):
 
     assert totalRowsReturned == manifest['totalFound']
     assert manifest['totalFound'] == len(complete_manifest)
-    assert next(row for row in json_manifest if row['GCS_URL'] == 'gs://idc_dev/fffd47d2-cc01-4363-874b-9ca846e256e8.dcm')
+    assert next(row for row in json_manifest if row['GCS_URL'] == 'gs://idc-dev-open/fffd47d2-cc01-4363-874b-9ca846e256e8.dcm')
 
 
 def test_paged_url_active(client, app):
@@ -504,7 +505,7 @@ def test_paged_url_active(client, app):
 
     assert totalRowsReturned == manifest['totalFound']
     assert manifest['totalFound'] == len(complete_manifest)
-    assert next(row for row in json_manifest if row['GCS_URL'] == 'gs://idc_dev/0009e98e-bca2-4a68-ada1-62e0a8b2dbaf.dcm')
+    assert next(row for row in json_manifest if row['GCS_URL'] == 'gs://idc-dev-open/0009e98e-bca2-4a68-ada1-62e0a8b2dbaf.dcm')
 
     delete_cohort(client, id)
 
