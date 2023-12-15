@@ -144,6 +144,7 @@ jobs:
             sudo -E /bin/bash ./shell/compareConfig.sh "gs://${DEPLOYMENT_BUCKET}/${API_APP_YAML}"
             sudo -E /bin/bash ./shell/compareConfig.sh "gs://${DEPLOYMENT_BUCKET}/${OPEN_API_V1_YAML}"
             sudo -E /bin/bash ./shell/compareConfig.sh "gs://${DEPLOYMENT_BUCKET}/${OPEN_API_V2_YAML}"
+
       - save_cache:
           key: idc-api-{{ .Branch }}-{{ .Revision }}-{{ epoch }}
           paths:
@@ -197,4 +198,3 @@ workflows:
                 - idc-test
                 - idc-uat
                 - idc-prod
-
