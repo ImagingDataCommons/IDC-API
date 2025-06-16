@@ -178,7 +178,7 @@ jobs:
       - deployment_setup
       - auth
       - deployment_config
-      - deploy:
+      - run:
           name: Deployment
           command: |
             sudo -E /bin/bash ./shell/unpack_for_deployment.sh
