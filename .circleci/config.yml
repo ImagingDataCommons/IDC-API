@@ -149,7 +149,6 @@ jobs:
           paths:
             - ./api
             - ./shell
-            - ./IDC-Common
             - ./Dockerfile
             - ./app.yaml
             - ./openapi-appengine.v1.yaml
