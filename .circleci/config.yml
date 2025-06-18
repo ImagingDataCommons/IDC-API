@@ -149,6 +149,7 @@ jobs:
           paths:
             - ./api
             - ./shell
+            - ./IDC-Common
             - ./Dockerfile
             - ./app.yaml
             - ./dispatch.yaml

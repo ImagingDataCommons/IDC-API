@@ -7,6 +7,8 @@ if [ -n "$CI" ]; then
     if [[ ${CIRCLE_BRANCH} =~ idc-(prod|uat|test).* ]]; then
         COMMON_BRANCH=$(awk -F- '{print $1"-"$2}' <<< ${CIRCLE_BRANCH})
     fi
+    echo "Cloning IDC-Common branch ${COMMON_BRANCH}..."
+    git clone -b ${COMMON_BRANCH} https://github.com/ImagingDataCommons/IDC-Common.git
 else
     export $(cat /home/vagrant/parentDir/secure_files/idc/.env | grep -v ^# | xargs) 2> /dev/null
     export HOME=/home/vagrant
