@@ -56,7 +56,7 @@ ADD . /app
 RUN pip install -r /app/requirements.txt -t /app/lib/ --upgrade
 RUN pip install gunicorn==21.2.0
 
-ENV PYTHONPATH=/app:/app/api:/app/lib:/app/IDC-Common
+ENV PYTHONPATH=/app:/app/api:/app/lib
 
 WORKDIR /app/
 
