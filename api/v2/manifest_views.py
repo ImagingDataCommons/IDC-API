@@ -26,7 +26,7 @@ from python_settings import settings
 from .manifest_utils import validate_body, validate_cohort_def, process_special_fields, encrypt_pageToken, decrypt_pageToken, remove_modality
 from jsonschema import validate as schema_validate, ValidationError
 from .version_config import API_VERSION
-from google_helpers.bigquery.bq_support import BigQuerySupport
+from api.bigquery.bq_support import BigQuerySupport
 BLACKLIST_RE = settings.BLACKLIST_RE
 
 logger = logging.getLogger(settings.LOGGER_NAME)

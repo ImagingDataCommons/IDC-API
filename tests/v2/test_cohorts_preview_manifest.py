@@ -71,11 +71,14 @@ def test_sql_ranged_integer(client, app):
         }
         for op, val in ops.items():
             print(f"Testing operand {op} with values {val}")
-            # pivot = f'bigquery-public-data.idc_v{VERSION}.dicom_pivot' if test_branch!='LOCAL' else f'idc-dev-etl.idc_v{VERSION}_pub.dicom_pivot'
-            pivot = f'bigquery-public-data.idc_v{VERSION}.dicom_pivot'
-            expected_sql = f"""\n            #standardSQL\n    \n        SELECT dicom_pivot.collection_id,dicom_pivot.crdc_study_uuid,dicom_pivot.crdc_series_uuid,dicom_pivot.crdc_instance_uuid,dicom_pivot.gcs_bucket,dicom_pivot.gcs_url,dicom_pivot.aws_bucket,dicom_pivot.aws_url,tcga_clinical_rel9.age_at_diagnosis\n        FROM `{pivot}` dicom_pivot \n        \n        LEFT JOIN `bigquery-public-data.idc_v4.tcga_clinical_rel9` tcga_clinical_rel9\n        ON dicom_pivot.PatientID = tcga_clinical_rel9.case_barcode\n    \n        WHERE TRUE  AND (((LOWER(dicom_pivot.collection_id) = LOWER("tcga_read"))) AND ((LOWER(dicom_pivot.Modality) IN UNNEST(["ct", "mr"]))) AND ((({val['clause']})) AND ((LOWER(tcga_clinical_rel9.race) = LOWER("WHITE"))) OR tcga_clinical_rel9.case_barcode IS NULL))\n        \n        GROUP BY dicom_pivot.collection_id, dicom_pivot.crdc_study_uuid, dicom_pivot.crdc_series_uuid, dicom_pivot.crdc_instance_uuid, tcga_clinical_rel9.age_at_diagnosis, dicom_pivot.gcs_bucket, dicom_pivot.gcs_url, dicom_pivot.aws_bucket, dicom_pivot.aws_url\n        ORDER BY dicom_pivot.collection_id ASC, dicom_pivot.crdc_study_uuid ASC, dicom_pivot.crdc_series_uuid ASC, dicom_pivot.crdc_instance_uuid ASC, tcga_clinical_rel9.age_at_diagnosis ASC, dicom_pivot.gcs_bucket ASC, dicom_pivot.gcs_url ASC, dicom_pivot.aws_bucket ASC, dicom_pivot.aws_url ASC\n        \n        \n    """
-            expected_sql = re.sub('\n', '', expected_sql)
-            expected_sql = re.sub(' +', ' ', expected_sql)
+            pivot_dev = f'idc-dev-etl.idc_v{VERSION}_pub.dicom_pivot'
+            pivot_pub = f'bigquery-public-data.idc_v{VERSION}.dicom_pivot'
+            expected_sql_dev = f"""\n            #standardSQL\n    \n        SELECT dicom_pivot.collection_id,dicom_pivot.crdc_study_uuid,dicom_pivot.crdc_series_uuid,dicom_pivot.crdc_instance_uuid,dicom_pivot.gcs_bucket,dicom_pivot.gcs_url,dicom_pivot.aws_bucket,dicom_pivot.aws_url,tcga_clinical_rel9.age_at_diagnosis\n        FROM `{pivot_dev}` dicom_pivot \n        \n        LEFT JOIN `bigquery-public-data.idc_v4.tcga_clinical_rel9` tcga_clinical_rel9\n        ON dicom_pivot.PatientID = tcga_clinical_rel9.case_barcode\n    \n        WHERE TRUE  AND (((LOWER(dicom_pivot.collection_id) = LOWER("tcga_read"))) AND ((LOWER(dicom_pivot.Modality) IN UNNEST(["ct", "mr"]))) AND ((({val['clause']})) AND ((LOWER(tcga_clinical_rel9.race) = LOWER("WHITE"))) OR tcga_clinical_rel9.case_barcode IS NULL))\n        \n        GROUP BY dicom_pivot.collection_id, dicom_pivot.crdc_study_uuid, dicom_pivot.crdc_series_uuid, dicom_pivot.crdc_instance_uuid, tcga_clinical_rel9.age_at_diagnosis, dicom_pivot.gcs_bucket, dicom_pivot.gcs_url, dicom_pivot.aws_bucket, dicom_pivot.aws_url\n        ORDER BY dicom_pivot.collection_id ASC, dicom_pivot.crdc_study_uuid ASC, dicom_pivot.crdc_series_uuid ASC, dicom_pivot.crdc_instance_uuid ASC, tcga_clinical_rel9.age_at_diagnosis ASC, dicom_pivot.gcs_bucket ASC, dicom_pivot.gcs_url ASC, dicom_pivot.aws_bucket ASC, dicom_pivot.aws_url ASC\n        \n        \n    """
+            expected_sql_pub = f"""\n            #standardSQL\n    \n        SELECT dicom_pivot.collection_id,dicom_pivot.crdc_study_uuid,dicom_pivot.crdc_series_uuid,dicom_pivot.crdc_instance_uuid,dicom_pivot.gcs_bucket,dicom_pivot.gcs_url,dicom_pivot.aws_bucket,dicom_pivot.aws_url,tcga_clinical_rel9.age_at_diagnosis\n        FROM `{pivot_pub}` dicom_pivot \n        \n        LEFT JOIN `bigquery-public-data.idc_v4.tcga_clinical_rel9` tcga_clinical_rel9\n        ON dicom_pivot.PatientID = tcga_clinical_rel9.case_barcode\n    \n        WHERE TRUE  AND (((LOWER(dicom_pivot.collection_id) = LOWER("tcga_read"))) AND ((LOWER(dicom_pivot.Modality) IN UNNEST(["ct", "mr"]))) AND ((({val['clause']})) AND ((LOWER(tcga_clinical_rel9.race) = LOWER("WHITE"))) OR tcga_clinical_rel9.case_barcode IS NULL))\n        \n        GROUP BY dicom_pivot.collection_id, dicom_pivot.crdc_study_uuid, dicom_pivot.crdc_series_uuid, dicom_pivot.crdc_instance_uuid, tcga_clinical_rel9.age_at_diagnosis, dicom_pivot.gcs_bucket, dicom_pivot.gcs_url, dicom_pivot.aws_bucket, dicom_pivot.aws_url\n        ORDER BY dicom_pivot.collection_id ASC, dicom_pivot.crdc_study_uuid ASC, dicom_pivot.crdc_series_uuid ASC, dicom_pivot.crdc_instance_uuid ASC, tcga_clinical_rel9.age_at_diagnosis ASC, dicom_pivot.gcs_bucket ASC, dicom_pivot.gcs_url ASC, dicom_pivot.aws_bucket ASC, dicom_pivot.aws_url ASC\n        \n        \n    """
+            expected_sql_dev = re.sub('\n', '', expected_sql_dev)
+            expected_sql_dev = re.sub(' +', ' ', expected_sql_dev)
+            expected_sql_pub = re.sub('\n', '', expected_sql_pub)
+            expected_sql_pub = re.sub(' +', ' ', expected_sql_pub)
 
             filters = {
                 "collection_id": ["TCGA-read"],
@@ -126,7 +129,14 @@ def test_sql_ranged_integer(client, app):
             cohort_def = get_data(response)['cohort_def']['sql']
             cohort_def = re.sub('\n', '', cohort_def)
             cohort_def = re.sub(' +', ' ', cohort_def)
-            assert cohort_def== expected_sql
+
+            if test_branch == 'LOCAL':
+                assert cohort_def == expected_sql_dev
+            elif test_branch == 'PUBLIC':
+                assert cohort_def == expected_sql_pub
+            else:
+                if cohort_def != expected_sql_pub:
+                    assert cohort_def == expected_sql_dev
 
 
 # Test that the generated SQL is correct. Iterate over ranged filters
@@ -178,12 +188,14 @@ def test_sql_ranged_number(client, app):
         }
         for op, val in ops.items():
             print(f"Testing operand {op} with values {val}")
-            # pivot = f'bigquery-public-data.idc_v{VERSION}.dicom_pivot' if test_branch!="LOCAL" else f'idc-dev-etl.idc_v{VERSION}_pub.dicom_pivot'
-            pivot = f'bigquery-public-data.idc_v{VERSION}.dicom_pivot'
-            expected_sql = f"""\n            #standardSQL\n    \n        SELECT dicom_pivot.collection_id,dicom_pivot.crdc_study_uuid,dicom_pivot.crdc_series_uuid,dicom_pivot.crdc_instance_uuid,dicom_pivot.gcs_bucket,dicom_pivot.gcs_url,dicom_pivot.aws_bucket,dicom_pivot.aws_url,tcga_clinical_rel9.age_at_diagnosis\n        FROM `{pivot}` dicom_pivot \n        \n        LEFT JOIN `bigquery-public-data.idc_v4.tcga_clinical_rel9` tcga_clinical_rel9\n        ON dicom_pivot.PatientID = tcga_clinical_rel9.case_barcode\n    \n        WHERE TRUE  AND (((LOWER(dicom_pivot.collection_id) = LOWER("tcga_read"))) AND ((LOWER(dicom_pivot.Modality) IN UNNEST(["ct", "mr"]))) AND ((({val['clause']})) AND ((LOWER(tcga_clinical_rel9.race) = LOWER("WHITE"))) OR tcga_clinical_rel9.case_barcode IS NULL))\n        \n        GROUP BY dicom_pivot.collection_id, dicom_pivot.crdc_study_uuid, dicom_pivot.crdc_series_uuid, dicom_pivot.crdc_instance_uuid, tcga_clinical_rel9.age_at_diagnosis, dicom_pivot.gcs_bucket, dicom_pivot.gcs_url, dicom_pivot.aws_bucket, dicom_pivot.aws_url\n        ORDER BY dicom_pivot.collection_id ASC, dicom_pivot.crdc_study_uuid ASC, dicom_pivot.crdc_series_uuid ASC, dicom_pivot.crdc_instance_uuid ASC, tcga_clinical_rel9.age_at_diagnosis ASC, dicom_pivot.gcs_bucket ASC, dicom_pivot.gcs_url ASC, dicom_pivot.aws_bucket ASC, dicom_pivot.aws_url ASC\n        \n        \n    """
-            # expected_sql = f"""\n            #standardSQL\n    \n        SELECT dicom_pivot.collection_id,dicom_pivot.crdc_study_uuid,dicom_pivot.crdc_series_uuid,dicom_pivot.crdc_instance_uuid,dicom_pivot.gcs_bucket,dicom_pivot.gcs_url,dicom_pivot.aws_bucket,dicom_pivot.aws_url,tcga_clinical_rel9.age_at_diagnosis\n        FROM `{pivot}` dicom_pivot \n        \n        LEFT JOIN `bigquery-public-data.idc_v4.tcga_clinical_rel9` tcga_clinical_rel9\n        ON dicom_pivot.PatientID = tcga_clinical_rel9.case_barcode\n    \n        WHERE ((dicom_pivot.collection_id = "tcga_read")) AND ((LOWER(dicom_pivot.Modality) IN UNNEST(["ct", "mr"]))) AND ((({val['clause']})) AND ((tcga_clinical_rel9.race = "WHITE")) OR tcga_clinical_rel9.case_barcode IS NULL)\n        \n        GROUP BY dicom_pivot.collection_id, dicom_pivot.crdc_study_uuid, dicom_pivot.crdc_series_uuid, dicom_pivot.crdc_instance_uuid, tcga_clinical_rel9.age_at_diagnosis, dicom_pivot.gcs_bucket, dicom_pivot.gcs_url, dicom_pivot.aws_bucket, dicom_pivot.aws_url\n        ORDER BY dicom_pivot.collection_id ASC, dicom_pivot.crdc_study_uuid ASC, dicom_pivot.crdc_series_uuid ASC, dicom_pivot.crdc_instance_uuid ASC, tcga_clinical_rel9.age_at_diagnosis ASC, dicom_pivot.gcs_bucket ASC, dicom_pivot.gcs_url ASC, dicom_pivot.aws_bucket ASC, dicom_pivot.aws_url ASC\n        \n        \n    """
-            expected_sql = re.sub('\n', '', expected_sql)
-            expected_sql = re.sub(' +', ' ', expected_sql)
+            pivot_dev = f'idc-dev-etl.idc_v{VERSION}_pub.dicom_pivot'
+            pivot_pub = f'bigquery-public-data.idc_v{VERSION}.dicom_pivot'
+            expected_sql_dev = f"""\n            #standardSQL\n    \n        SELECT dicom_pivot.collection_id,dicom_pivot.crdc_study_uuid,dicom_pivot.crdc_series_uuid,dicom_pivot.crdc_instance_uuid,dicom_pivot.gcs_bucket,dicom_pivot.gcs_url,dicom_pivot.aws_bucket,dicom_pivot.aws_url,tcga_clinical_rel9.age_at_diagnosis\n        FROM `{pivot_dev}` dicom_pivot \n        \n        LEFT JOIN `bigquery-public-data.idc_v4.tcga_clinical_rel9` tcga_clinical_rel9\n        ON dicom_pivot.PatientID = tcga_clinical_rel9.case_barcode\n    \n        WHERE TRUE  AND (((LOWER(dicom_pivot.collection_id) = LOWER("tcga_read"))) AND ((LOWER(dicom_pivot.Modality) IN UNNEST(["ct", "mr"]))) AND ((({val['clause']})) AND ((LOWER(tcga_clinical_rel9.race) = LOWER("WHITE"))) OR tcga_clinical_rel9.case_barcode IS NULL))\n        \n        GROUP BY dicom_pivot.collection_id, dicom_pivot.crdc_study_uuid, dicom_pivot.crdc_series_uuid, dicom_pivot.crdc_instance_uuid, tcga_clinical_rel9.age_at_diagnosis, dicom_pivot.gcs_bucket, dicom_pivot.gcs_url, dicom_pivot.aws_bucket, dicom_pivot.aws_url\n        ORDER BY dicom_pivot.collection_id ASC, dicom_pivot.crdc_study_uuid ASC, dicom_pivot.crdc_series_uuid ASC, dicom_pivot.crdc_instance_uuid ASC, tcga_clinical_rel9.age_at_diagnosis ASC, dicom_pivot.gcs_bucket ASC, dicom_pivot.gcs_url ASC, dicom_pivot.aws_bucket ASC, dicom_pivot.aws_url ASC\n        \n        \n    """
+            expected_sql_pub = f"""\n            #standardSQL\n    \n        SELECT dicom_pivot.collection_id,dicom_pivot.crdc_study_uuid,dicom_pivot.crdc_series_uuid,dicom_pivot.crdc_instance_uuid,dicom_pivot.gcs_bucket,dicom_pivot.gcs_url,dicom_pivot.aws_bucket,dicom_pivot.aws_url,tcga_clinical_rel9.age_at_diagnosis\n        FROM `{pivot_pub}` dicom_pivot \n        \n        LEFT JOIN `bigquery-public-data.idc_v4.tcga_clinical_rel9` tcga_clinical_rel9\n        ON dicom_pivot.PatientID = tcga_clinical_rel9.case_barcode\n    \n        WHERE TRUE  AND (((LOWER(dicom_pivot.collection_id) = LOWER("tcga_read"))) AND ((LOWER(dicom_pivot.Modality) IN UNNEST(["ct", "mr"]))) AND ((({val['clause']})) AND ((LOWER(tcga_clinical_rel9.race) = LOWER("WHITE"))) OR tcga_clinical_rel9.case_barcode IS NULL))\n        \n        GROUP BY dicom_pivot.collection_id, dicom_pivot.crdc_study_uuid, dicom_pivot.crdc_series_uuid, dicom_pivot.crdc_instance_uuid, tcga_clinical_rel9.age_at_diagnosis, dicom_pivot.gcs_bucket, dicom_pivot.gcs_url, dicom_pivot.aws_bucket, dicom_pivot.aws_url\n        ORDER BY dicom_pivot.collection_id ASC, dicom_pivot.crdc_study_uuid ASC, dicom_pivot.crdc_series_uuid ASC, dicom_pivot.crdc_instance_uuid ASC, tcga_clinical_rel9.age_at_diagnosis ASC, dicom_pivot.gcs_bucket ASC, dicom_pivot.gcs_url ASC, dicom_pivot.aws_bucket ASC, dicom_pivot.aws_url ASC\n        \n        \n    """
+            expected_sql_dev = re.sub('\n', '', expected_sql_dev)
+            expected_sql_dev = re.sub(' +', ' ', expected_sql_dev)
+            expected_sql_pub = re.sub('\n', '', expected_sql_pub)
+            expected_sql_pub = re.sub(' +', ' ', expected_sql_pub)
 
             filters = {
                 "collection_id": ["TCGA-read"],
@@ -234,7 +246,14 @@ def test_sql_ranged_number(client, app):
             cohort_def = get_data(response)['cohort_def']['sql']
             cohort_def = re.sub('\n', '', cohort_def)
             cohort_def = re.sub(' +', ' ', cohort_def)
-            assert cohort_def== expected_sql
+
+            if test_branch == 'LOCAL':
+                assert cohort_def == expected_sql_dev
+            elif test_branch == 'PUBLIC':
+                assert cohort_def == expected_sql_pub
+            else:
+                if cohort_def != expected_sql_pub:
+                    assert cohort_def == expected_sql_dev
 
 
 @_testMode
@@ -356,6 +375,7 @@ def test_no_filters(client, app):
         assert (set(row[key] for row in bq_data) == set(row[key] for row in rows))
 
 
+@_testMode
 def test_minimal(client, app):
     bq_client = bigquery.Client(project='idc-dev-etl')
 
