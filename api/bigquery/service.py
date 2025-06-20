@@ -18,7 +18,7 @@ from oauth2client.client import flow_from_clientsecrets, GoogleCredentials
 from googleapiclient import discovery
 from oauth2client.file import Storage
 from oauth2client import tools
-from django.conf import settings
+# from django.conf import settings
 import httplib2
 import sys
 
