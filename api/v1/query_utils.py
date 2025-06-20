@@ -24,7 +24,7 @@ from .auth import get_auth
 from cryptography.fernet import Fernet, InvalidToken
 
 import settings
-from google_helpers.bigquery.bq_support import BigQuerySupport
+from api.bigquery.bq_support import BigQuerySupport
 
 
 logger = logging.getLogger('main_logger')
