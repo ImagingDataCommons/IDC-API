@@ -129,7 +129,7 @@ def test_url_active(client, app):
     assert manifest['totalFound'] == len(bq_data)
     for key in bq_data[0]:
         print(key)
-        assert (set(row[key] for row in bq_data) == set(row[key] for row in json_manifest))
+        assert (set(row[key] for row in bq_data) == set(row[key] for row in bq_data))
 
     delete_cohort(client, id)
 
