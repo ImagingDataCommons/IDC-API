@@ -17,6 +17,7 @@ limitations under the License.
 import os
 from os.path import join, dirname, exists
 from dotenv import load_dotenv
+import logging
 
 SECURE_LOCAL_PATH = os.environ.get('SECURE_LOCAL_PATH', '')
 
