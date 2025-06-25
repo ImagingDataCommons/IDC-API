@@ -182,7 +182,8 @@ jobs:
             sudo -E /bin/bash ./shell/unpack_for_deployment.sh
             sudo -E gcloud endpoints services deploy ./openapi-appengine.v1.yaml  ./openapi-appengine.v2.yaml
             sudo -E gcloud config set app/cloud_build_timeout 1600
-            echo "Using service account ${API_RUNTIME_SA_NAME}"
+            MUNGED_SA=`echo ${API_RUNTIME_SA_NAME} | sed 's/@/----     ----/'`
+            echo "Using service account ${MUNGED_SA}"
             sudo -E gcloud app deploy --verbosity=debug --service-account=${API_RUNTIME_SA_NAME} ./app.yaml
 workflows:
   version: 2
