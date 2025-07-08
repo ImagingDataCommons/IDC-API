@@ -29,7 +29,7 @@ from flask import Blueprint
 
 cohorts_bp = Blueprint(f'cohorts_bp_{API_VERSION}', __name__, url_prefix='/{}'.format(API_VERSION))
 
-@cohorts_bp.route('/cohorts/', methods=('GET', 'POST', 'DELETE'), strict_slashes=False)
+# @cohorts_bp.route('/cohorts/', methods=('GET', 'POST', 'DELETE'), strict_slashes=False)
 def cohorts():
     """
     GET: Retrieve a user's list of cohorts
@@ -94,8 +94,7 @@ def cohorts():
     return response
 
 
-# @cohorts_bp.route('/cohorts/<int:cohort_id>/', methods=['GET', 'DELETE'], strict_slashes=False)
-@cohorts_bp.route('/cohorts/<int:cohort_id>/', methods=['DELETE'], strict_slashes=False)
+# @cohorts_bp.route('/cohorts/<int:cohort_id>/', methods=['DELETE'], strict_slashes=False)
 def cohort(cohort_id):
     """
     GET: Retrieve extended information for a specific cohort

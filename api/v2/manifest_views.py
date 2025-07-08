@@ -97,7 +97,7 @@ def post_query_preview(body, user=None):
     return query_info
 
 
-def get_query_next_page(user):
+def get_query_next_page(user=None):
     query_info = query_next_page(request, user)
     return query_info
 
