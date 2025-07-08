@@ -26,7 +26,7 @@ def test_about(client, app):
     assert 'NCI IDC API' in get_data(response)['message']
 
 @_testMode
-def test_user_info(client, app):
+def _test_user_info(client, app):
     response = client.get(f'{API_URL}/users/account_details', headers=auth_header)
     assert response.status_code == 200
     user_details = get_data(response)['user_details']

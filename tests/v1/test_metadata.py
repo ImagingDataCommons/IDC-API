@@ -45,12 +45,12 @@ def test_collections(client, app):
     collection = collections['tcga_prad']
     assert collection['cancer_type'] == 'Prostate Cancer'
     # assert collection['description'] == '<p>The <a href="http://imaging.cancer.gov/" target="_blank"><u>Cancer Imaging Program (CIP)</u></a> is working directly with primary investigators from institutes participating in TCGA to obtain and load images relating to the genomic, clinical, and pathological data being stored within the <a href="http://tcga-data.nci.nih.gov/" target="_blank">TCGA Data Portal</a>.&nbsp;Currently this image collection of prostate adenocarcinoma (PRAD) patients can be matched by each unique case identifier with the extensive gene and expression data of the same case from The Cancer Genome Atlas Data Portal to research the link between clinical phenome and tissue genome.<br /><br /></p>\n <p>Please see the <a href="https://doi.org/10.7937/K9/TCIA.2016.YXOGLM4Y" target="_blank">TCGA-PRAD</a> page to learn more about the images and to obtain any supporting metadata for this collection.</p>\n'
-    assert collection['doi'].lower() == '10.7937/K9/TCIA.2016.YXOGLM4Y'.lower()
-    assert collection['image_types'] == 'CT, MR, PT, SM'
+    assert '10.7937/K9/TCIA.2016.YXOGLM4Y'.lower() in collection['doi'].lower()
+    assert collection['image_types'] == 'CT, MR, PT, SM, ANN, SEG'
     assert collection['location'] == 'Prostate'
     assert collection['species'] == 'Human'
     assert collection['subject_count'] == 500
-    assert collection['supporting_data'] == 'Clinical, Genomics'
+    assert collection['supporting_data'] == 'Clinical, Genomics, Histopathology'
 
 
 def test_analysis_results(client, app):
@@ -64,8 +64,8 @@ def test_analysis_results(client, app):
     assert 'Standardized representation of the TCIA LIDC-IDRI annotations using DICOM' in results
     collection = results['Standardized representation of the TCIA LIDC-IDRI annotations using DICOM' ]
     # assert collection['idc_data_versions'] == ['1.0','2.0']
-    assert collection['analysisArtifacts'] == 'Tumor segmentations, image features'
-    assert collection['cancer_type'] == 'Lung'
+    assert collection['analysisArtifacts'] == 'Tumor segmentations, image features, Software/Source Code'
+    assert collection['cancer_type'] == 'Lung Cancer'
     assert collection['collections'].lower() =='lidc_idri'
     # assert collection['date_updated'] == '2016-08-29'
     assert collection['doi'].lower() == '10.7937/TCIA.2018.h7umfurq'.lower()

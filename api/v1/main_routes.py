@@ -43,6 +43,6 @@ def swagger():
     return render_template('swagger/index.html')
 
 
-@main_bp.route('/oauth2callback/', strict_slashes=False)
+# @main_bp.route('/oauth2callback/', strict_slashes=False)
 def oauth2callback():
     return render_template('swagger/oauth2-redirect.html')
