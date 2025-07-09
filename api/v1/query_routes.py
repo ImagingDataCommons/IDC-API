@@ -27,7 +27,7 @@ from flask import Blueprint
 
 cohort_query_bp = Blueprint(f'query_bp_{API_VERSION}', __name__, url_prefix='/{}'.format(API_VERSION))
 
-@cohort_query_bp.route('/cohorts/query/<int:cohort_id>', methods=['POST'], strict_slashes=False)
+# @cohort_query_bp.route('/cohorts/query/<int:cohort_id>', methods=['POST'], strict_slashes=False)
 def cohorts_query(cohort_id):
     try:
         user_info = auth_info()
@@ -157,7 +157,7 @@ def cohorts_query_next_page():
     return response
 
 
-@cohort_query_bp.route('/dicomMetadata', methods=['GET'], strict_slashes=False)
+# @cohort_query_bp.route('/dicomMetadata', methods=['GET'], strict_slashes=False)
 def query_dicom_metadata():
     """
     GET: Retrieve metadata on all instances
@@ -201,7 +201,7 @@ def query_dicom_metadata():
 
     return response
 
-@cohort_query_bp.route('/dicomMetadata/nextPage', methods=['GET'], strict_slashes=False)
+# @cohort_query_bp.route('/dicomMetadata/nextPage', methods=['GET'], strict_slashes=False)
 def query_dicom_metadata_nextpage():
     """
     GET: Retrieve metadata on all instances
