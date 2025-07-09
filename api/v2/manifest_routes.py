@@ -28,7 +28,7 @@ from flask import Blueprint
 
 cohort_manifest_bp = Blueprint(f'manifest_bp_{API_VERSION}', __name__, url_prefix='/{}'.format(API_VERSION))
 
-@cohort_manifest_bp.route('/cohorts/manifest/<int:cohort_id>', methods=['POST'], strict_slashes=False)
+# @cohort_manifest_bp.route('/cohorts/manifest/<int:cohort_id>', methods=['POST'], strict_slashes=False)
 def cohorts_query(cohort_id):
     try:
         body = request.json
@@ -128,7 +128,7 @@ def cohorts_preview_query():
     return response
 
 
-@cohort_manifest_bp.route('/cohorts/manifest/nextPage', methods=['GET'], strict_slashes=False)
+# @cohort_manifest_bp.route('/cohorts/manifest/nextPage', methods=['GET'], strict_slashes=False)
 def cohorts_query_next_page():
     try:
         user_info = auth_info()

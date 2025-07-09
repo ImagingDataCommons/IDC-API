@@ -124,17 +124,17 @@ def create_app(test_config=None):
                 with open(os.path.split(os.path.abspath(dirname(__file__)))[0] + f'/openapi-appengine.{version}.yaml') as fpi:
                     data = yaml.load(fpi)
                     del data['paths']['/swagger']
-                    del data['paths']['/oauth2callback']
-                    # We need to adjust the security definition for use with Swagger UI itself (as opposed to the deployed API)
-                    data['securityDefinitions']['google_id_token'] = {
-                        'type': 'oauth2',
-                        'authorizationUrl': "https://accounts.google.com/o/oauth2/v2/auth",
-                        'tokenUrl': 'https://www.googleapis.com/oauth2/v1/token',
-                        'flow': 'implicit',
-                        'scopes': {"https://www.googleapis.com/auth/userinfo.email": "User email address",
-                                   "openid": "For OIDC"},
-                        'x-tokenName': 'id_token'
-                    }
+                    # del data['paths']['/oauth2callback']
+                    ## We need to adjust the security definition for use with Swagger UI itself (as opposed to the deployed API)
+                    # data['securityDefinitions']['google_id_token'] = {
+                    #     'type': 'oauth2',
+                    #     'authorizationUrl': "https://accounts.google.com/o/oauth2/v2/auth",
+                    #     'tokenUrl': 'https://www.googleapis.com/oauth2/v1/token',
+                    #     'flow': 'implicit',
+                    #     'scopes': {"https://www.googleapis.com/auth/userinfo.email": "User email address",
+                    #                "openid": "For OIDC"},
+                    #     'x-tokenName': 'id_token'
+                    # }
                     # Escape the ' or the JS will be sad
                     json_spec = json.dumps(data).replace("'", "\\'")
             except Exception as e:
