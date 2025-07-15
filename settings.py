@@ -34,7 +34,6 @@ APP_ENGINE_FLEX = 'aef-'
 APP_ENGINE = 'Google App Engine/'
 API_VERSION = 'v1'
 
-
 BASE_DIR                = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)) + os.sep
 
 DEBUG                   = (os.environ.get('DEBUG', 'False') == 'True')
@@ -45,7 +44,8 @@ DEBUG_API_EMAIL            = os.getenv('DEBUG_API_EMAIL','')
 print("[STATUS] DEBUG mode is "+str(DEBUG))
 
 LOGGER_NAME = os.environ.get('API_LOGGER_NAME', 'main_logger')
-LOG_LEVEL                  = logging.DEBUG if DEBUG else logging.INFO
+# LOG_LEVEL                  = logging.DEBUG if DEBUG else logging.INFO
+LOG_LEVEL                  = logging.DEBUG
 
 BASE_URL                = os.environ.get('BASE_URL', 'https://dev-portal.canceridc.dev')
 BASE_API_URL            = os.environ.get('BASE_API_URL', 'https://dev-portal.canceridc.dev')
@@ -55,8 +55,6 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
 
 PAGE_TOKEN_KEY          = os.environ.get('PAGE_TOKEN_KEY', '')
 
-GOOGLE_APPLICATION_CREDENTIALS  = join(dirname(__file__), SECURE_LOCAL_PATH, os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', ''))
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS
 # OAUTH2_CLIENT_ID                = os.environ.get('OAUTH2_CLIENT_ID', '')
 # OAUTH2_CLIENT_SECRET            = os.environ.get('OAUTH2_CLIENT_SECRET', '')
 
@@ -101,10 +99,29 @@ BIGQUERY_DATA_PROJECT_ID       = os.environ.get('BIGQUERY_DATA_PROJECT_ID', GCLO
 
 
 # Explicitly check for known items
-BLACKLIST_RE = r'((?i)<script>|(?i)</script>|!\[\]|!!\[\]|\[\]\[\".*\"\]|(?i)<iframe>|(?i)</iframe>)'
+BLACKLIST_RE = r'(<script>|</script>|!\[\]|!!\[\]|\[\]\[\".*\"\]|<iframe>|</iframe>)'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
 IS_DEV = (os.environ.get('IS_DEV', 'False') == 'True')
+# WJRL Pulled from ISB-CGC-API:
+# AppEngine var is set in the app.yaml so this should be false for CI and local dev apps
+IS_APP_ENGINE = bool(os.getenv('IS_APP_ENGINE', 'False') == 'True')
+
+# Deployed systems retrieve credentials from the metadata server, but a local VM build must provide a credentials file
+# for some actions. CircleCI needs SA access but can make use of the deployment SA's key.
+GOOGLE_APPLICATION_CREDENTIALS = None
+
+if IS_DEV:
+    GOOGLE_APPLICATION_CREDENTIALS = join(dirname(__file__), SECURE_LOCAL_PATH, os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', ''))
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS
+    if GOOGLE_APPLICATION_CREDENTIALS is not None and not exists(GOOGLE_APPLICATION_CREDENTIALS):
+        print("[ERROR] Google application credentials file wasn't found! Provided path: {}".format(GOOGLE_APPLICATION_CREDENTIALS))
+        exit(1)
+    print("[STATUS] GOOGLE_APPLICATION_CREDENTIALS: {}".format(GOOGLE_APPLICATION_CREDENTIALS))
+
+if IS_APP_ENGINE:
+    os.unsetenv('GOOGLE_APPLICATION_CREDENTIALS')
+    print("[STATUS] AppEngine Flex detected--default credentials will be used.")

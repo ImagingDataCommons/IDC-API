@@ -96,8 +96,8 @@ jobs:
       TZ: "/usr/share/zoneinfo/America/Los_Angeles"
     working_directory: ~/IDC-API
     docker:
-      - image: cimg/python:3.8.14
-      - image: cimg/mysql:5.7.36
+      - image: cimg/python:3.11
+      - image: cimg/mysql:8.0
         environment:
           MYSQL_ROOT_HOST: "%"
           MYSQL_USER: ubuntu
@@ -149,12 +149,12 @@ jobs:
           paths:
             - ./api
             - ./shell
-            - ./IDC-Common
             - ./Dockerfile
             - ./app.yaml
             - ./openapi-appengine.v1.yaml
             - ./openapi-appengine.v2.yaml
             - ./settings.py
+            - ./gunicorn.conf.py
             - ./txt
             - ./json
             - ./.env
@@ -164,7 +164,7 @@ jobs:
       TZ: "/usr/share/zoneinfo/America/Los_Angeles"
     working_directory: ~/IDC-API
     docker:
-      - image: cimg/python:3.8.14
+      - image: cimg/python:3.11
     steps:
       - restore_cache:
           keys:
@@ -176,12 +176,15 @@ jobs:
       - deployment_setup
       - auth
       - deployment_config
-      - deploy:
+      - run:
           name: Deployment
           command: |
             sudo -E /bin/bash ./shell/unpack_for_deployment.sh
             sudo -E gcloud endpoints services deploy ./openapi-appengine.v1.yaml  ./openapi-appengine.v2.yaml
-            sudo -E gcloud app deploy --verbosity=debug ./app.yaml --quiet
+            sudo -E gcloud config set app/cloud_build_timeout 1600
+            MUNGED_SA=`echo ${API_RUNTIME_SA_NAME} | sed 's/@/-at-/' | tr 'A-Za-z' 'N-ZA-Mn-za-m'`
+            echo "Using service account ${MUNGED_SA}"
+            sudo -E gcloud app deploy --verbosity=debug --service-account=${API_RUNTIME_SA_NAME} ./app.yaml
 workflows:
   version: 2
   build_and_deploy:
