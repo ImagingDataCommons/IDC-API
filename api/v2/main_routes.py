@@ -20,7 +20,7 @@ from flask import jsonify, render_template
 from python_settings import settings
 from flask import Blueprint
 from .version_config import API_VERSION
-logger = logging.getLogger(settings.LOGGER_NAME)
+logger = logging.getLogger(__name__)
 
 SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
 
@@ -44,6 +44,6 @@ def swagger():
     return render_template('swagger/index.html')
 
 
-@main_bp.route('/oauth2callback/', strict_slashes=False)
+# @main_bp.route('/oauth2callback/', strict_slashes=False)
 def oauth2callback():
     return render_template('swagger/oauth2-redirect.html')

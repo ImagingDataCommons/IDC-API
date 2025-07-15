@@ -114,7 +114,6 @@ def normalize_query_fields(fields):
 def process_special_fields(special_fields, query_info, data):
     fields = set([field.lower() for field in data['request_data']['fields']])
     sql_string = query_info['query']['sql_string']
-    # sql_string = 'SELECT'
     select_string = sql_string[0:sql_string.find('FROM')]
     if 'WHERE' in sql_string:
         from_string = sql_string[sql_string.find('FROM'):sql_string.find('WHERE')]
@@ -251,18 +250,7 @@ def validate_cohort_def(cohort_def):
             return param_info
 
     if not 'filters' in cohort_def:
-        param_info = dict(
-            message=f"'filters' is a required cohort_def key",
-            code=400
-        )
-        return param_info
-
-    if cohort_def['filters'] == {}:
-        param_info = dict(
-            message=f"'filters' must have at least one item",
-            code=400
-        )
-        return param_info
+         cohort_def['filters'] = {}
 
     if not "name" in cohort_def:
         cohort_def["name"] = ""
@@ -282,14 +270,13 @@ def validate_cohort_def(cohort_def):
     cohort_def['filters'], filter_info = normalize_filterset(cohort_def['filters'])
     if 'message' in filter_info:
         return(filter_info)
+
     # Validate the filterset
     try:
         schema_validate(cohort_def['filters'], COHORT_FILTERS_SCHEMA)
     except ValidationError as e:
         logger.warning('[WARNING] Filters rejected for improper formatting: {}'.format(e.message))
-        # schema = "['"+"'],['".join(e.schema_path)+"']"
         schema = ','.join(str(b) for b in [[a] for a in e.schema_path][0:-1])
-        # instance = "['"+"'],['".join(str(a) for a in e.path)+"']"
         instance = ','.join(str(b) for b in [[a] for a in e.path])
         message = f'{e.message}; Failed validating {e.schema_path[-1]} in schema {schema} on instance {instance}'
         result = dict(
@@ -360,7 +347,6 @@ def validate_body(body):
 def remove_modality(query_info, data):
     data["request_data"]["fields"].remove("Modality")
     sql_string = query_info['query']['sql_string']
-    # sql_string = 'SELECT'
     select_string = sql_string[0:sql_string.find('FROM')]
     if 'WHERE' in sql_string:
         from_string = sql_string[sql_string.find('FROM'):sql_string.find('WHERE')]

@@ -14,25 +14,30 @@
 # limitations under the License.
 #
 
-import logging
 import os
-from os.path import join, dirname
-import sys
+from os.path import dirname
 import ruamel.yaml
 import json
-from flask import Flask, jsonify, request
+from flask import jsonify
 from flask_talisman import Talisman
-
-import os
 
 from flask import Flask
 
 from python_settings import settings
 import settings as api_settings
-
 settings.configure(api_settings)
 assert settings.configured
 
+if settings.IS_APP_ENGINE:
+    import google.cloud.logging
+    client = google.cloud.logging_v2.Client()
+    client.setup_logging()
+
+import logging
+LOG_LEVEL = logging.DEBUG # if settings.DEBUG else logging.INFO
+logger = logging.getLogger(__name__)
+logger.setLevel(LOG_LEVEL)
+logger.info('[STATUS] Logger test')
 
 def create_app(test_config=None):
     # create and configure the app
@@ -68,20 +73,15 @@ def create_app(test_config=None):
     def hello():
         return 'Hello, World!'
 
-    '''from main_routes import *
-    from cohorts_routes import *
-    from program_routes import *
-    from file_routes import *
-    from query_routes import *
-    from user_routes import *'''
-
     logger = logging.getLogger(settings.LOGGER_NAME)
-    logger.setLevel(settings.LOG_LEVEL)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(name)s:%(levelname)s [%(filename)s:%(funcName)s:%(lineno)s] %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+    logger.setLevel(LOG_LEVEL)
+
+    if settings.IS_DEV:
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(name)s:%(levelname)s [%(filename)s:%(funcName)s:%(lineno)s] %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
 
     from .v1.query_routes import cohort_query_bp
     app.register_blueprint(cohort_query_bp)
@@ -115,6 +115,7 @@ def create_app(test_config=None):
 
     @app.context_processor
     def utilities():
+        logger.info("[STATUS] Defining context processor")
         def load_spec(version):
             json_spec = ""
             try:
@@ -123,17 +124,17 @@ def create_app(test_config=None):
                 with open(os.path.split(os.path.abspath(dirname(__file__)))[0] + f'/openapi-appengine.{version}.yaml') as fpi:
                     data = yaml.load(fpi)
                     del data['paths']['/swagger']
-                    del data['paths']['/oauth2callback']
-                    # We need to adjust the security definition for use with Swagger UI itself (as opposed to the deployed API)
-                    data['securityDefinitions']['google_id_token'] = {
-                        'type': 'oauth2',
-                        'authorizationUrl': "https://accounts.google.com/o/oauth2/v2/auth",
-                        'tokenUrl': 'https://www.googleapis.com/oauth2/v1/token',
-                        'flow': 'implicit',
-                        'scopes': {"https://www.googleapis.com/auth/userinfo.email": "User email address",
-                                   "openid": "For OIDC"},
-                        'x-tokenName': 'id_token'
-                    }
+                    # del data['paths']['/oauth2callback']
+                    ## We need to adjust the security definition for use with Swagger UI itself (as opposed to the deployed API)
+                    # data['securityDefinitions']['google_id_token'] = {
+                    #     'type': 'oauth2',
+                    #     'authorizationUrl': "https://accounts.google.com/o/oauth2/v2/auth",
+                    #     'tokenUrl': 'https://www.googleapis.com/oauth2/v1/token',
+                    #     'flow': 'implicit',
+                    #     'scopes': {"https://www.googleapis.com/auth/userinfo.email": "User email address",
+                    #                "openid": "For OIDC"},
+                    #     'x-tokenName': 'id_token'
+                    # }
                     # Escape the ' or the JS will be sad
                     json_spec = json.dumps(data).replace("'", "\\'")
             except Exception as e:
@@ -148,7 +149,7 @@ def create_app(test_config=None):
             ouath2_callback_path="{}/oauth2callback".format(settings.API_VERSION),
             api_client_id=settings.API_CLIENT_ID
         )
-
+        
     # Error handlers
     @app.errorhandler(500)
     def unexpected_error(e):
@@ -161,7 +162,7 @@ def create_app(test_config=None):
         })
         response.status_code = 500
         return response
-
+    
     return app
 
 if __name__ == '__main__':

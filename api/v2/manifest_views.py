@@ -26,7 +26,7 @@ from python_settings import settings
 from .manifest_utils import validate_body, validate_cohort_def, process_special_fields, encrypt_pageToken, decrypt_pageToken, remove_modality
 from jsonschema import validate as schema_validate, ValidationError
 from .version_config import API_VERSION
-from google_helpers.bigquery.bq_support import BigQuerySupport
+from api.bigquery.bq_support import BigQuerySupport
 BLACKLIST_RE = settings.BLACKLIST_RE
 
 logger = logging.getLogger(settings.LOGGER_NAME)
@@ -97,7 +97,7 @@ def post_query_preview(body, user=None):
     return query_info
 
 
-def get_query_next_page(user):
+def get_query_next_page(user=None):
     query_info = query_next_page(request, user)
     return query_info
 
@@ -157,6 +157,10 @@ def perform_query(url, body, special_fields, user):  # , user=None):
         # Decide how to proceed depending on job status (DONE, RUNNING, ERRORS)
         query_info = is_job_done(job_status, query_info, jobReference, user)
         if "message" in query_info:
+            logger.error(query_info)
+            query_info = dict(
+                message='[ERROR] get_query(): Error trying to get a manifest',
+                code=400)
             return query_info
         query_info, next_page = get_query_job_results(query_info, body['page_size'],
                                     jobReference, next_page)
@@ -260,6 +264,7 @@ def submit_BQ_job(sql_string, params):
     results = BigQuerySupport.execute_query_and_fetch_results(sql_string, params, no_results=True)
     return results
 
+
 def is_job_done(job_is_done, query_info, jobReference, user):
     if job_is_done and job_is_done['status']['state'] == 'DONE':
         if 'status' in job_is_done and 'errors' in job_is_done['status']:
@@ -281,7 +286,7 @@ def is_job_done(job_is_done, query_info, jobReference, user):
         # Don't return the query in this form
         query_info.pop('query', None)
 
-        logger.error("[ERROR] API query took longer than the allowed time to execute. " +
+        logger.info("[ERROR] API query took longer than the allowed time to execute. " +
                      "Retry the query using the next_page token.")
         cipher_pageToken = encrypt_pageToken(user, jobReference, "", 'query')
         query_info['next_page'] = cipher_pageToken

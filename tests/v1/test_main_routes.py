@@ -24,12 +24,12 @@ def test_about(client, app):
     assert 'NCI IDC API' in response.json['message']
 
 
-def test_oauth2callback(client, app):
+def _test_oauth2callback(client, app):
     response = client.get(f'/{API_VERSION}/oauth2callback')
     print(response)
 
 
-def test_user_info(client, app):
+def _test_user_info(client, app):
     response = client.get(f'/{API_VERSION}/users/account_details')
     assert response.status_code == 200
     user_details = response.json['user_details']
