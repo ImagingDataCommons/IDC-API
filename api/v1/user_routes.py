@@ -29,61 +29,70 @@ user_bp = Blueprint(f'user_bp_{API_VERSION}', __name__, url_prefix='/{}'.format(
 
 # @user_bp.route('/users/account_details/', methods=['GET'], strict_slashes=False)
 def account_details():
-    """
-    GET: Retrieve extended information for a specific user
-    """
-
-    try:
-        user_info = auth_info()
-        if not user_info:
-            response = jsonify({
-                'code': 403,
-                'message': 'Encountered an error while attempting to identify this user.'
-            })
-            response.status_code = 500
-        else:
-            results = get_account_details(user_info["email"])
-
-            # if account_info:
-            #     response_obj = {}
-            #     code = None
-            #
-            #     if 'message' in account_info:
-            #         code = 400
-            #     else:
-            #         code = 200
-            #     response_obj['data'] = account_info
-            #     response_obj['code'] = code
-            #     response = jsonify(response_obj)
-            #     response.status_code = code
-            # else:
-            #     response = jsonify({
-            #         'code': 404,
-            #         'message': "Unable to retrieve information for {}.".format(str(user_info['email']))})
-            #     response.status_code = 404
-            if 'message' in results:
-                response = jsonify(results)
-                response.status_code = results['code']
-            else:
-                response = jsonify({
-                    'code': 200,
-                    **results
-                })
-                response.status_code = 200
-
-
-    except UserValidationException as e:
-        response = jsonify({
-            'code': 403,
-            'message': str(e)
-        })
-        response.status_code = 403
-    except Exception as e:
-        logger.exception(e)
-        response = jsonify({
-            'code': 500,
-            'message': 'Encountered an error while attempting to retrieve user information.'
-        })
-        response.status_code = 500
-
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+                         ' Documentation is available at <https://learn.canceridc.dev/>'
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 405
     return response
+    # """
+    # GET: Retrieve extended information for a specific user
+    # """
+    #
+    # try:
+    #     user_info = auth_info()
+    #     if not user_info:
+    #         response = jsonify({
+    #             'code': 403,
+    #             'message': 'Encountered an error while attempting to identify this user.'
+    #         })
+    #         response.status_code = 500
+    #     else:
+    #         results = get_account_details(user_info["email"])
+    #
+    #         # if account_info:
+    #         #     response_obj = {}
+    #         #     code = None
+    #         #
+    #         #     if 'message' in account_info:
+    #         #         code = 400
+    #         #     else:
+    #         #         code = 200
+    #         #     response_obj['data'] = account_info
+    #         #     response_obj['code'] = code
+    #         #     response = jsonify(response_obj)
+    #         #     response.status_code = code
+    #         # else:
+    #         #     response = jsonify({
+    #         #         'code': 404,
+    #         #         'message': "Unable to retrieve information for {}.".format(str(user_info['email']))})
+    #         #     response.status_code = 404
+    #         if 'message' in results:
+    #             response = jsonify(results)
+    #             response.status_code = results['code']
+    #         else:
+    #             response = jsonify({
+    #                 'code': 200,
+    #                 **results
+    #             })
+    #             response.status_code = 200
+    #
+    #
+    # except UserValidationException as e:
+    #     response = jsonify({
+    #         'code': 403,
+    #         'message': str(e)
+    #     })
+    #     response.status_code = 403
+    # except Exception as e:
+    #     logger.exception(e)
+    #     response = jsonify({
+    #         'code': 500,
+    #         'message': 'Encountered an error while attempting to retrieve user information.'
+    #     })
+    #     response.status_code = 500
+    #
+    # return response

@@ -27,116 +27,152 @@ metadata_bp = Blueprint(f'metadata_bp_{API_VERSION}', __name__, url_prefix='/{}'
 
 @metadata_bp.route('/versions/', methods=['GET'], strict_slashes=False)
 def versions():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+                         ' Documentation is available at <https://learn.canceridc.dev/>'
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 405
+    return response
     """Retrieve a list of IDC versions"""
 
-    response = None
-
-    try:
-        results = get_versions()
-        if 'message' in results:
-            response = jsonify(results)
-            response.status_code = results['code']
-        else:
-            response = jsonify({
-                'code': 200,
-                **results
-            })
-            response.status_code = 200
-    except Exception as e:
-        logger.error("[ERROR] While retrieving IDC versions:")
-        logger.exception(e)
-        response = jsonify({
-            'code': 500,
-            'message': 'Encountered an error while retrieving the versions list.'
-        })
-        response.status_code = 500
-
-    return response
+    # response = None
+    #
+    # try:
+    #     results = get_versions()
+    #     if 'message' in results:
+    #         response = jsonify(results)
+    #         response.status_code = results['code']
+    #     else:
+    #         response = jsonify({
+    #             'code': 200,
+    #             **results
+    #         })
+    #         response.status_code = 200
+    # except Exception as e:
+    #     logger.error("[ERROR] While retrieving IDC versions:")
+    #     logger.exception(e)
+    #     response = jsonify({
+    #         'code': 500,
+    #         'message': 'Encountered an error while retrieving the versions list.'
+    #     })
+    #     response.status_code = 500
+    #
+    # return response
 
 
 @metadata_bp.route('/collections/', methods=['GET'], strict_slashes=False)
 def collections():
-    """Retrieve the list of collections in some IDC versions """
-    response = None
-
-    try:
-        results = get_collections()
-
-        if 'message' in results:
-            response = jsonify(results)
-            response.status_code = results['code']
-        else:
-            response = jsonify({
-                'code': 200,
-                **results
-            })
-            response.status_code = 200
-    except Exception as e:
-        logger.error("[ERROR] While retrieving collection information:")
-        logger.exception(e)
-        response = jsonify({
-            'code': 500,
-            'message': 'Encountered an error while retrieving the collection list.'
-        })
-        response.status_code = 500
-
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+                         ' Documentation is available at <https://learn.canceridc.dev/>'
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 405
     return response
+    # """Retrieve the list of collections in some IDC versions """
+    # response = None
+    #
+    # try:
+    #     results = get_collections()
+    #
+    #     if 'message' in results:
+    #         response = jsonify(results)
+    #         response.status_code = results['code']
+    #     else:
+    #         response = jsonify({
+    #             'code': 200,
+    #             **results
+    #         })
+    #         response.status_code = 200
+    # except Exception as e:
+    #     logger.error("[ERROR] While retrieving collection information:")
+    #     logger.exception(e)
+    #     response = jsonify({
+    #         'code': 500,
+    #         'message': 'Encountered an error while retrieving the collection list.'
+    #     })
+    #     response.status_code = 500
+    #
+    # return response
 
 
 @metadata_bp.route('/analysis_results/', methods=['GET'], strict_slashes=False)
 def analysis_results():
-    """Retrieve the list of analysis results in some IDC versions """
-    response = None
-
-    try:
-        results = get_analysis_results()
-
-        if 'message' in results:
-            response = jsonify(results)
-            response.status_code = results['code']
-        else:
-            response = jsonify({
-                'code': 200,
-                **results
-            })
-            response.status_code = 200
-    except Exception as e:
-        logger.error("[ERROR] While retrieving analysis results information:")
-        logger.exception(e)
-        response = jsonify({
-            'code': 500,
-            'message': 'Encountered an error while retrieving the analysis results list.'
-        })
-        response.status_code = 500
-
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+                         ' Documentation is available at <https://learn.canceridc.dev/>'
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 405
     return response
+    # """Retrieve the list of analysis results in some IDC versions """
+    # response = None
+    #
+    # try:
+    #     results = get_analysis_results()
+    #
+    #     if 'message' in results:
+    #         response = jsonify(results)
+    #         response.status_code = results['code']
+    #     else:
+    #         response = jsonify({
+    #             'code': 200,
+    #             **results
+    #         })
+    #         response.status_code = 200
+    # except Exception as e:
+    #     logger.error("[ERROR] While retrieving analysis results information:")
+    #     logger.exception(e)
+    #     response = jsonify({
+    #         'code': 500,
+    #         'message': 'Encountered an error while retrieving the analysis results list.'
+    #     })
+    #     response.status_code = 500
+    #
+    # return response
 
 
 @metadata_bp.route('/attributes', methods=['GET'], strict_slashes=False)
 def attributes():
-    """Retrieve a list of IDC versions"""
-
-    response = None
-
-    try:
-        results = get_attributes()
-
-        if 'message' in results:
-            response = jsonify(results)
-            response.status_code = results['code']
-        else:
-            response = jsonify({
-                'code': 200,
-                **results
-            })
-            response.status_code = 200
-    except Exception as e:
-        logger.error("[ERROR] While retrieving IDC versions:")
-        logger.exception(e)
-        response = jsonify({
-            'code': 500,
-            'message': 'Encountered an error while retrieving the attributes.'
-        })
-        response.status_code = 500
-
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+                         ' Documentation is available at <https://learn.canceridc.dev/>'
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 405
     return response
+    """Retrieve a list of IDC versions"""
+    #
+    # response = None
+    #
+    # try:
+    #     results = get_attributes()
+    #
+    #     if 'message' in results:
+    #         response = jsonify(results)
+    #         response.status_code = results['code']
+    #     else:
+    #         response = jsonify({
+    #             'code': 200,
+    #             **results
+    #         })
+    #         response.status_code = 200
+    # except Exception as e:
+    #     logger.error("[ERROR] While retrieving IDC versions:")
+    #     logger.exception(e)
+    #     response = jsonify({
+    #         'code': 500,
+    #         'message': 'Encountered an error while retrieving the attributes.'
+    #     })
+    #     response.status_code = 500
+    #
+    # return response
