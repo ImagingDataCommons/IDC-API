@@ -38,7 +38,7 @@ def cohorts():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     #
     # """
@@ -113,7 +113,7 @@ def cohort(cohort_id):
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
 
     # """
@@ -176,7 +176,7 @@ def cohort_manifest(cohort_id):
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     # """
     # GET: Retrieve extended information for a specific cohort
@@ -240,7 +240,7 @@ def cohort_preview_manifest():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     # """
     # POST: Retrieve manifest for a previewed cohort
@@ -290,7 +290,7 @@ def cohort_manifest_nextpage():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     """
     GET: Retrieve the next page of a previous manifest request
