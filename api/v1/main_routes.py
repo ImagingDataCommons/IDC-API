@@ -24,17 +24,6 @@ logger = logging.getLogger(settings.LOGGER_NAME)
 main_bp = Blueprint(f'main_bp_{API_VERSION}', __name__, url_prefix='/{}'.format(API_VERSION))
 
 @main_bp.route('/about/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/versions/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/collections/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/analysis_results/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/attributes/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/', methods=('GET'), strict_slashes=False)
-@main_bp.route('/cohorts/manifest/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/manifest/preview/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/manifest/nextPage/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/query/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/query/preview/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/query/nextPage/', methods=['GET'], strict_slashes=False)
 def about():
     response = jsonify({
         'code': 410,
@@ -45,6 +34,124 @@ def about():
     response.status_code = 410
     return response
 
+@main_bp.route('/versions/', methods=['GET'], strict_slashes=False)
+def about():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
+
+
+@main_bp.route('/collections/', methods=['GET'], strict_slashes=False)
+def collections():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
+
+
+@main_bp.route('/analysis_results/', methods=['GET'], strict_slashes=False)
+def analysis_results():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
+
+
+@main_bp.route('/attributes/', methods=['GET'], strict_slashes=False)
+def attributes():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
+
+
+@main_bp.route('/cohorts/', methods=('GET'), strict_slashes=False)
+def cohorts():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
+
+
+@main_bp.route('/cohorts/manifest/', methods=['GET'], strict_slashes=False)
+def cohortsmanifest():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
+
+
+@main_bp.route('/cohorts/manifest/preview/', methods=['GET'], strict_slashes=False)
+def cohortsmanifestpreview():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
+
+
+@main_bp.route('/cohorts/manifest/nextPage/', methods=['GET'], strict_slashes=False)
+def cohortsmanifestnextPage():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
+
+
+@main_bp.route('/cohorts/query/', methods=['GET'], strict_slashes=False)
+def cohortsquery():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
+
+
+@main_bp.route('/cohorts/query/preview/', methods=['GET'], strict_slashes=False)
+def cohortsquerypreview():
+    response = jsonify({
+        'code': 410,
+        'message': 'IDC v1 API endpoints have been deprecated',
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
+                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+    })
+    response.status_code = 410
+    return response
 
 # Swagger UI
 @main_bp.route('/swagger/', methods=['GET'], strict_slashes=False)
