@@ -32,7 +32,7 @@ def cohorts_query(cohort_id):
     response = jsonify({
         'code': 410,
         'message': 'IDC v1 API endpoints have been deprecated',
-        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
@@ -89,7 +89,7 @@ def cohorts_preview_query():
     response = jsonify({
         'code': 410,
         'message': 'IDC v1 API endpoints have been deprecated',
-        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
@@ -139,7 +139,7 @@ def cohorts_query_next_page():
     response = jsonify({
         'code': 410,
         'message': 'IDC v1 API endpoints have been deprecated',
-        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
@@ -189,7 +189,7 @@ def query_dicom_metadata():
     response = jsonify({
         'code': 410,
         'message': 'IDC v1 API endpoints have been deprecated',
-        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
@@ -242,7 +242,7 @@ def query_dicom_metadata_nextpage():
     response = jsonify({
         'code': 410,
         'message': 'IDC v1 API endpoints have been deprecated',
-        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
