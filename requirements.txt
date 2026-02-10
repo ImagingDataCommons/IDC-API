@@ -9,7 +9,7 @@ charset-normalizer==3.0.1
 click
 colorama==0.4.6
 coverage==7.1.0
-cryptography==44.0.1
+cryptography>=46.0.5
 exceptiongroup==1.1.0
 Flask==3.1.1
 flask-talisman==1.0.0
@@ -46,7 +46,7 @@ openapi2jsonschema
 packaging==23.0
 pluggy==1.0.0
 proto-plus==1.22.2
-protobuf>=46.0.5
+protobuf>=5.29.6
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.21
