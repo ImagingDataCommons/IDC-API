@@ -34,7 +34,7 @@ def versions():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     """Retrieve a list of IDC versions"""
 
@@ -72,7 +72,7 @@ def collections():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     # """Retrieve the list of collections in some IDC versions """
     # response = None
@@ -110,7 +110,7 @@ def analysis_results():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     # """Retrieve the list of analysis results in some IDC versions """
     # response = None
@@ -148,7 +148,7 @@ def attributes():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     """Retrieve a list of IDC versions"""
     #

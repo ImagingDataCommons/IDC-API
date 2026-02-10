@@ -33,7 +33,7 @@ def about():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
 
 

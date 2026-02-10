@@ -36,7 +36,7 @@ def cohorts_query(cohort_id):
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     # try:
     #     user_info = auth_info()
@@ -93,7 +93,7 @@ def cohorts_preview_query():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     # try:
     #     user_info = auth_info()
@@ -143,7 +143,7 @@ def cohorts_query_next_page():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     # try:
     #     user_info = auth_info()
@@ -193,7 +193,7 @@ def query_dicom_metadata():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     """
     GET: Retrieve metadata on all instances
@@ -246,7 +246,7 @@ def query_dicom_metadata_nextpage():
                          ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
-    response.status_code = 405
+    response.status_code = 410
     return response
     """
     GET: Retrieve metadata on all instances
