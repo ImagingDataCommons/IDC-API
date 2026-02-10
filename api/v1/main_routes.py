@@ -27,18 +27,14 @@ main_bp = Blueprint(f'main_bp_{API_VERSION}', __name__, url_prefix='/{}'.format(
 @main_bp.route('/versions/', methods=['GET'], strict_slashes=False)
 @main_bp.route('/collections/', methods=['GET'], strict_slashes=False)
 @main_bp.route('/analysis_results/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/attributes', methods=['GET'], strict_slashes=False)
+@main_bp.route('/attributes/', methods=['GET'], strict_slashes=False)
 @main_bp.route('/cohorts/', methods=('GET'), strict_slashes=False)
-@main_bp.route('/cohorts/<int:cohort_id>/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/manifest/<int:cohort_id>/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/manifest/', methods=['GET'], strict_slashes=False)
 @main_bp.route('/cohorts/manifest/preview/', methods=['GET'], strict_slashes=False)
 @main_bp.route('/cohorts/manifest/nextPage/', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/query/<int:cohort_id>', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/query/preview', methods=['POST'], strict_slashes=False)
-@main_bp.route('/cohorts/query/nextPage', methods=['GET'], strict_slashes=False)
-@main_bp.route('/cohorts/query/nextPage', methods=['GET'], strict_slashes=False)
-@main_bp.route('/dicomMetadata/nextPage', methods=['GET'], strict_slashes=False)
-@main_bp.route('/users/account_details/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/query/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/query/preview/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/query/nextPage/', methods=['GET'], strict_slashes=False)
 def about():
     response = jsonify({
         'code': 410,
