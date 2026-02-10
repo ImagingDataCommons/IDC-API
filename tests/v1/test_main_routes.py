@@ -20,8 +20,8 @@ from testing_config import VERSIONS, API_VERSION
 
 def test_about(client, app):
     response = client.get(f'/{API_VERSION}/about')
-    assert client.get(f'/{API_VERSION}/about').status_code == 200
-    assert 'NCI IDC API' in response.json['message']
+    assert client.get(f'/{API_VERSION}/about').status_code == 410
+    assert 'IDC v1 API endpoints have been deprecated' in response.json['message']
 
 
 def _test_oauth2callback(client, app):

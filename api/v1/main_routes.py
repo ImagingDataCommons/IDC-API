@@ -35,7 +35,7 @@ def about():
     return response
 
 @main_bp.route('/versions/', methods=['GET'], strict_slashes=False)
-def about():
+def versions():
     response = jsonify({
         'code': 410,
         'message': 'IDC v1 API endpoints have been deprecated',
@@ -82,7 +82,7 @@ def attributes():
     return response
 
 
-@main_bp.route('/cohorts/', methods=('GET'), strict_slashes=False)
+@main_bp.route('/cohorts/', methods=['GET'], strict_slashes=False)
 def cohorts():
     response = jsonify({
         'code': 410,
@@ -159,6 +159,6 @@ def swagger():
     return render_template('swagger/index.html')
 
 
-# @main_bp.route('/oauth2callback/', strict_slashes=False)
+# # @main_bp.route('/oauth2callback/', strict_slashes=False)
 def oauth2callback():
     return render_template('swagger/oauth2-redirect.html')
