@@ -21,16 +21,29 @@ from flask import Blueprint
 from .version_config import API_VERSION
 logger = logging.getLogger(settings.LOGGER_NAME)
 
-SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
-
 main_bp = Blueprint(f'main_bp_{API_VERSION}', __name__, url_prefix='/{}'.format(API_VERSION))
+
 @main_bp.route('/about/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/versions/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/collections/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/analysis_results/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/attributes', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/', methods=('GET'), strict_slashes=False)
+@main_bp.route('/cohorts/<int:cohort_id>/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/manifest/<int:cohort_id>/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/manifest/preview/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/manifest/nextPage/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/query/<int:cohort_id>', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/query/preview', methods=['POST'], strict_slashes=False)
+@main_bp.route('/cohorts/query/nextPage', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/query/nextPage', methods=['GET'], strict_slashes=False)
+@main_bp.route('/dicomMetadata/nextPage', methods=['GET'], strict_slashes=False)
+@main_bp.route('/users/account_details/', methods=['GET'], strict_slashes=False)
 def about():
     response = jsonify({
         'code': 410,
         'message': 'IDC v1 API endpoints have been deprecated',
         'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
-                         ' Documentation is available at <https://learn.canceridc.dev/>'
                          ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
     })
     response.status_code = 410
