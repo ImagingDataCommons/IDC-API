@@ -18,12 +18,13 @@ import logging
 import json
 import requests
 from .auth import get_auth
+# from .manifest_routes import global_bq_location, global_bq_project
 
 from flask import request
 from werkzeug.exceptions import BadRequest
 
 from python_settings import settings
-from .manifest_utils import validate_body, validate_cohort_def, process_special_fields, encrypt_pageToken, decrypt_pageToken, remove_modality
+from .manifest_utils import validate_body, validate_cohort_def, process_special_fields, remove_modality
 from jsonschema import validate as schema_validate, ValidationError
 from .version_config import API_VERSION
 from api.bigquery.bq_support import BigQuerySupport
@@ -31,33 +32,35 @@ BLACKLIST_RE = settings.BLACKLIST_RE
 
 logger = logging.getLogger(settings.LOGGER_NAME)
 
+MAX_GLOBALS_DICT_SIZE = 1024
+# def post_query(body, user, cohort_id):
+#     try:
+#         body = validate_body(body)
+#         if 'message' in body:
+#             return body
+#         special_fields = body.pop('special_fields')
+#
+#         query_info = perform_query(
+#                              f"{settings.BASE_URL}/cohorts/api/{API_VERSION}/{cohort_id}/query/",
+#                              body,
+#                              special_fields,
+#                              user=user)
+#         if "message" in query_info:
+#             return query_info
+#         query_info['cohort_def']['user_email'] = user['email']
+#
+#     except BadRequest as e:
+#         logger.warning("[WARNING] Received bad request - couldn't load JSON.")
+#         query_info = dict(
+#             message='The JSON provided in this request appears to be improperly formatted.',
+#             code = 400)
+#
+#     return query_info
 
-def post_query(body, user, cohort_id):
-    try:
-        body = validate_body(body)
-        if 'message' in body:
-            return body
-        special_fields = body.pop('special_fields')
 
-        query_info = perform_query(
-                             f"{settings.BASE_URL}/cohorts/api/{API_VERSION}/{cohort_id}/query/",
-                             body,
-                             special_fields,
-                             user=user)
-        if "message" in query_info:
-            return query_info
-        query_info['cohort_def']['user_email'] = user['email']
+# def post_query_preview(body, user=None):
+def post_query_preview(body, globals):
 
-    except BadRequest as e:
-        logger.warning("[WARNING] Received bad request - couldn't load JSON.")
-        query_info = dict(
-            message='The JSON provided in this request appears to be improperly formatted.',
-            code = 400)
-
-    return query_info
-
-
-def post_query_preview(body, user=None):
     try:
         if not "cohort_def" in body:
             param_info = dict(
@@ -79,9 +82,7 @@ def post_query_preview(body, user=None):
         query_info = perform_query(
                              f"{settings.BASE_URL}/cohorts/api/{API_VERSION}/preview/query/",
                              body,
-                             special_fields,
-                             user=user)
-
+                             special_fields, globals)
     except BadRequest as e:
         logger.warning("[WARNING] Received bad request - couldn't load JSON.")
         query_info = dict(
@@ -97,8 +98,8 @@ def post_query_preview(body, user=None):
     return query_info
 
 
-def get_query_next_page(user=None):
-    query_info = query_next_page(request, user)
+def get_query_next_page(globals):
+    query_info = query_next_page(request, globals)
     return query_info
 
 
@@ -120,12 +121,11 @@ def generate_user_sql_string(query_info):
     return query_info
 
 
-def perform_query(url, body, special_fields, user):  # , user=None):
+def perform_query(url, body, special_fields, globals):
     next_page = ""
     try:
         data = {
-            "request_data": body,
-            "email": user['email']
+            "request_data": body
         }
 
         auth = get_auth()
@@ -155,7 +155,7 @@ def perform_query(url, body, special_fields, user):  # , user=None):
         jobReference = job_status['jobReference']
 
         # Decide how to proceed depending on job status (DONE, RUNNING, ERRORS)
-        query_info = is_job_done(job_status, query_info, jobReference, user)
+        query_info = is_job_done(job_status, query_info, jobReference)
         if "message" in query_info:
             logger.error(query_info)
             query_info = dict(
@@ -164,12 +164,23 @@ def perform_query(url, body, special_fields, user):  # , user=None):
             return query_info
         query_info, next_page = get_query_job_results(query_info, body['page_size'],
                                     jobReference, next_page)
+        # if next_page:
+        #     cipher_pageToken = encrypt_pageToken(user, jobReference, next_page, 'query')
+        # else:
+        #     cipher_pageToken = ""
         if next_page:
-            cipher_pageToken = encrypt_pageToken(user, jobReference, next_page, 'query')
-        else:
-            cipher_pageToken = ""
-        query_info['next_page'] = cipher_pageToken
+            pageToken = f"{jobReference['jobId']}:{next_page}"
+            if len(globals) == MAX_GLOBALS_DICT_SIZE:
+                # Delete the oldest globals record
+                globals.pop(next(iter(globals)))
+            globals[jobReference['jobId']] = {
+                "bq_project": jobReference['projectId'],
+                "bq_location": jobReference['location']
+            }
 
+        else:
+            pageToken = ""
+        query_info['next_page'] = pageToken
 
     except Exception as e:
         logger.exception(e)
@@ -180,7 +191,7 @@ def perform_query(url, body, special_fields, user):  # , user=None):
     return query_info
 
 
-def query_next_page(request, user):
+def query_next_page(request, globals):
     query_info = {}
     page_params = {
         "page_size": 1000,
@@ -210,24 +221,47 @@ def query_next_page(request, user):
         #     not request.args.get('next_page') in ["", None]:
         if not page_params['next_page'] in ["", None]:
             # We have a non-empty next_page token
-            # jobDescription = decrypt_pageToken(user, request.args.get('next_page'), 'query')
-            jobDescription = decrypt_pageToken(user, page_params['next_page'], 'query')
-            if jobDescription == {}:
+            # jobDescription = decrypt_pageToken(user, page_params['next_page'], 'query')
+            # if jobDescription == {}:
+            #     query_info = dict(
+            #         message="Invalid next_page token {}".format(request.args.get('next_page')),
+            #         code=400
+            #     )
+            #     return query_info
+            # else:
+            #     jobReference = jobDescription['jobReference']
+            #     next_page = jobDescription['next_page']
+
+            page_token = page_params['next_page']
+            if ':' in page_token:
+                jobId = page_token.split(":")[0]
+                next_page = page_token.split(":")[1]
+                try:
+                    global_data = globals[jobId]
+                except:
+                    query_info = dict(
+                        message="Invalid next_page token {}".format(request.args.get('next_page')),
+                        code=400
+                    )
+                    return query_info
+
+                jobReference = {
+                    "projectId": global_data["bq_project"],
+                    "jobId": jobId,
+                    "location": global_data["bq_location"]
+                }
+            else:
                 query_info = dict(
                     message="Invalid next_page token {}".format(request.args.get('next_page')),
                     code=400
                 )
                 return query_info
-            else:
-                jobReference = jobDescription['jobReference']
-                next_page = jobDescription['next_page']
-
-            # If next_page is empty, then we timed out on the previous pass
+           # If next_page is empty, then we timed out on the previous pass
             if not next_page:
                 job_status = BigQuerySupport.wait_for_done(query_job={'jobReference':jobReference})
 
                 # Decide how to proceed depending on job status (DONE, RUNNING, ERRORS)
-                query_info = is_job_done(job_status, query_info, jobReference, user)
+                query_info = is_job_done(job_status, query_info, jobReference)
                 if "message" in query_info:
                     return query_info
             query_info = dict()
@@ -245,11 +279,16 @@ def query_next_page(request, user):
                                                             page_params['page_size'],
                                                             jobReference,
                                                             next_page)
+        # if next_page:
+        #     cipher_pageToken = encrypt_pageToken(user, jobReference, next_page, 'query')
+        # else:
+        #     cipher_pageToken = ""
+        # query_info['next_page'] = cipher_pageToken
         if next_page:
-            cipher_pageToken = encrypt_pageToken(user, jobReference, next_page, 'query')
+            pageToken = f'{jobId}:{next_page}'
         else:
-            cipher_pageToken = ""
-        query_info['next_page'] = cipher_pageToken
+            pageToken = ""
+        query_info['next_page'] = pageToken
 
     except Exception as e:
         logger.exception(e)
@@ -265,7 +304,7 @@ def submit_BQ_job(sql_string, params):
     return results
 
 
-def is_job_done(job_is_done, query_info, jobReference, user):
+def is_job_done(job_is_done, query_info, jobReference):
     if job_is_done and job_is_done['status']['state'] == 'DONE':
         if 'status' in job_is_done and 'errors' in job_is_done['status']:
             job_id = job_is_done['jobReference']['jobId']
@@ -288,8 +327,9 @@ def is_job_done(job_is_done, query_info, jobReference, user):
 
         logger.info("[ERROR] API query took longer than the allowed time to execute. " +
                      "Retry the query using the next_page token.")
-        cipher_pageToken = encrypt_pageToken(user, jobReference, "", 'query')
-        query_info['next_page'] = cipher_pageToken
+        # cipher_pageToken = encrypt_pageToken(user, jobReference, "", 'query')
+        # query_info['next_page'] = cipher_pageToken
+        query_info['next_page'] = f"{jobReference}:"
         query_info["cohortObjects"] = {
             "totalFound": 0,
             "rowsReturned": 0,

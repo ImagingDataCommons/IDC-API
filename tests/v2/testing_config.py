@@ -18,17 +18,17 @@ import os
 import requests
 from werkzeug.wrappers import Response as local_resonse
 from requests.models import Response as dev_response
-from scripts.idc_auth import get_credentials as get_prod_credentials
-from scripts.idc_auth_master import get_credentials as get_master_credentials
-from scripts.idc_auth_test import get_credentials as get_test_credentials
-from oauth2client.file import Storage
+# from scripts.idc_auth import get_credentials as get_prod_credentials
+# from scripts.idc_auth_master import get_credentials as get_master_credentials
+# from scripts.idc_auth_test import get_credentials as get_test_credentials
+# from oauth2client.file import Storage
 # from testing_branch import test_branch
 from testing_branch import test_branch
 # DEFAULT_STORAGE_FILE = os.path.join(os.path.expanduser("~"), '.idc_credentials')
 
 API_VERSION = 'v2'
 VERSION = 23
-NUM_COLLECTIONS = 150
+NUM_COLLECTIONS = 161
 
 # # True to access dev, testing or prod APIs, False to access local API
 # test_remote_api = True
@@ -53,26 +53,27 @@ API_URL = {
 
 get_data = dev_response.json if test_branch != "LOCAL" else local_resonse.get_json
 
-if test_branch != "LOCAL":
-    # storage = Storage(DEFAULT_STORAGE_FILE)
-    # credentials = storage.get()
-    # if credentials.access_token_expired:
-    #     # credentials have expired so use the refresh_tokem
-    #     token = credentials.refresh_token
-    # else:
-    #     # Still good; use the access token
-    #     token = credentials.access_token
-    storage = Storage(DEFAULT_STORAGE_FILE)
-    if test_branch == "MASTER":
-        credentials = get_master_credentials(storage)
-    elif test_branch == "TEST":
-        credentials = get_test_credentials(storage)
-    else:
-        credentials = get_prod_credentials(storage)
+# if test_branch != "LOCAL":
+#     # storage = Storage(DEFAULT_STORAGE_FILE)
+#     # credentials = storage.get()
+#     # if credentials.access_token_expired:
+#     #     # credentials have expired so use the refresh_tokem
+#     #     token = credentials.refresh_token
+#     # else:
+#     #     # Still good; use the access token
+#     #     token = credentials.access_token
+#     storage = Storage(DEFAULT_STORAGE_FILE)
+#     if test_branch == "MASTER":
+#         credentials = get_master_credentials(storage)
+#     elif test_branch == "TEST":
+#         credentials = get_test_credentials(storage)
+#     else:
+#         credentials = get_prod_credentials(storage)
+#
+#     # token = credentials.access_token
+#     token = credentials.token_response['id_token']
+#     auth_header = {"Authorization": f'Bearer {token}'}
+# else:
+#     auth_header = {}
 
-    # token = credentials.access_token
-    token = credentials.token_response['id_token']
-    auth_header = {"Authorization": f'Bearer {token}'}
-else:
-    auth_header = {}
-
+auth_header = {}

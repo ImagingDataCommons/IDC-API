@@ -20,10 +20,8 @@ import re
 
 import requests
 
-from flask import request
 from .auth import get_auth
 from .version_config import API_VERSION
-from .schemas.filters import COHORT_FILTERS_SCHEMA
 from python_settings import settings
 logger = logging.getLogger(settings.LOGGER_NAME)
 BLACKLIST_RE = settings.BLACKLIST_RE
