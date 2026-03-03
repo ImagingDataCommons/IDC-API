@@ -23,7 +23,7 @@ from .metadata_views import get_versions, get_filters, get_collections, get_anal
 from flask import Blueprint
 from google.cloud import bigquery
 from api.bigquery.bq_support import BigQuerySupport
-from .manifest_views import submit_BQ_job, is_job_done, get_query_job_results
+from .manifest_views import submit_BQ_job
 
 logger = logging.getLogger(settings.LOGGER_NAME)
 BLACKLIST_RE = settings.BLACKLIST_RE
