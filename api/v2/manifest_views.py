@@ -16,6 +16,8 @@
 
 import logging
 import json
+import os
+
 import requests
 from .auth import get_auth
 # from .manifest_routes import global_bq_location, global_bq_project
@@ -169,14 +171,14 @@ def perform_query(url, body, special_fields, globals):
         # else:
         #     cipher_pageToken = ""
         if next_page:
-            pageToken = f"{jobReference['jobId']}:{next_page}"
-            if len(globals) == MAX_GLOBALS_DICT_SIZE:
-                # Delete the oldest globals record
-                globals.pop(next(iter(globals)))
-            globals[jobReference['jobId']] = {
-                "bq_project": jobReference['projectId'],
-                "bq_location": jobReference['location']
-            }
+            pageToken = f"{jobReference['jobId']}:{jobReference['location']}:{next_page}"
+            # if len(globals) == MAX_GLOBALS_DICT_SIZE:
+            #     # Delete the oldest globals record
+            #     globals.pop(next(iter(globals)))
+            # globals[jobReference['jobId']] = {
+            #     "bq_project": jobReference['projectId'],
+            #     "bq_location": jobReference['location']
+            # }
 
         else:
             pageToken = ""
@@ -235,20 +237,21 @@ def query_next_page(request, globals):
             page_token = page_params['next_page']
             if ':' in page_token:
                 jobId = page_token.split(":")[0]
-                next_page = page_token.split(":")[1]
-                try:
-                    global_data = globals[jobId]
-                except:
-                    query_info = dict(
-                        message="Invalid next_page token {}".format(request.args.get('next_page')),
-                        code=400
-                    )
-                    return query_info
+                location = page_token.split(":")[1]
+                next_page = page_token.split(":")[2]
+                # try:
+                #     global_data = globals[jobId]
+                # except:
+                #     query_info = dict(
+                #         message="Invalid next_page token {}".format(request.args.get('next_page')),
+                #         code=400
+                #     )
+                #     return query_info
 
                 jobReference = {
-                    "projectId": global_data["bq_project"],
+                    "projectId": settings.BIGQUERY_PROJECT_ID,
                     "jobId": jobId,
-                    "location": global_data["bq_location"]
+                    "location": location
                 }
             else:
                 query_info = dict(
@@ -285,7 +288,7 @@ def query_next_page(request, globals):
         #     cipher_pageToken = ""
         # query_info['next_page'] = cipher_pageToken
         if next_page:
-            pageToken = f'{jobId}:{next_page}'
+            pageToken = f'{jobId}:{location}:{next_page}'
         else:
             pageToken = ""
         query_info['next_page'] = pageToken
