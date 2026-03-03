@@ -92,11 +92,11 @@ def create_app(test_config=None):
     from .v2.main_routes import main_bp # as v1_main_bp
     app.register_blueprint(main_bp)
 
-    from .v2.cohort_routes import cohorts_bp # as v1_cohorts_bp
-    app.register_blueprint(cohorts_bp)
+    # from .v2.cohort_routes import cohorts_bp # as v1_cohorts_bp
+    # app.register_blueprint(cohorts_bp)
 
-    from .v2.user_routes import user_bp # as v1_user_bp
-    app.register_blueprint(user_bp)
+    # from .v2.user_routes import user_bp # as v1_user_bp
+    # app.register_blueprint(user_bp)
 
     from .v2.metadata_routes import metadata_bp # as v1_metadata_bp
     app.register_blueprint(metadata_bp)
