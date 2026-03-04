@@ -13,13 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from __future__ import absolute_import
 
 import logging
 import re
-import json
-
-from cryptography.fernet import Fernet, InvalidToken
 
 import settings
 
@@ -30,7 +26,6 @@ from jsonschema import validate as schema_validate, ValidationError
 logger = logging.getLogger('main_logger')
 BLACKLIST_RE = settings.BLACKLIST_RE
 
-cipher_suite = Fernet(settings.PAGE_TOKEN_KEY)
 
 default_query_params = {
     "counts": False,
@@ -44,45 +39,6 @@ preview_body_keys = ["cohort_def", "fields", "counts", "group_size", "page_size"
 cohort_def_keys = ["name", "description", "filters"]
 
 lowered_query_params = {key.lower(): key for key in default_query_params}
-
-
-def encrypt_pageToken(user, jobReference, next_page, op):
-    # cipher_suite = Fernet(settings.PAGE_TOKEN_KEY)
-    jobDescription = dict(
-        email = user['email'],
-        jobReference = jobReference,
-        next_page = next_page,
-        op = op
-    )
-    plain_jobDescription = json.dumps(jobDescription).encode()
-
-    cipher_jobReference = cipher_suite.encrypt(plain_jobDescription).decode()
-
-    return cipher_jobReference
-
-
-def decrypt_pageToken(user, cipher_jobReference, op):
-    try:
-        plain_jobDescription = cipher_suite.decrypt(cipher_jobReference.encode())
-        jobDescription = json.loads(plain_jobDescription.decode())
-        if jobDescription["email"] != user['email']:
-            # Caller's email doesn't match what was encrypted
-            logger.error("Caller's email, {}, doesn't match what was encrypted: {}".format(
-                user['email'], jobDescription['email']))
-            return {}
-        elif jobDescription["op"] != op:
-            # Caller's email doesn't match what was encrypted
-            logger.error("Incorrect next_page endpoint for next_page token".format(
-                op, jobDescription['email']))
-            return {}
-        else:
-            jobDescription.pop('email')
-            jobDescription.pop('op')
-            return jobDescription
-    except InvalidToken:
-        logger.error("Could not decrypt token: {}".format(cipher_jobReference))
-        return {}
-
 
 
 def normalize_query_fields(fields):
