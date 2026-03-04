@@ -19,5 +19,4 @@ import os
 # Set to test LOCAL, MASTER, TEST or PROD branches
 # Only MASTER and TEST testing should be run through ISB VPN.
 
-test_branch = "TEST"
-
+test_branch = "MASTER"
