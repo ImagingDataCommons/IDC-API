@@ -1,12 +1,12 @@
-# 
-# Copyright 2019, Institute for Systems Biology
-# 
+#
+# Copyright 2015-2021, Institute for Systems Biology
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #    http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,18 +14,9 @@
 # limitations under the License.
 #
 
-import logging
-# import base64
-# import json
-# import os
-# from flask import request
-from python_settings import settings
-import settings
+import os
 
-logger = logging.getLogger(settings.LOGGER_NAME)
+# Set to test LOCAL, MASTER, TEST or PROD branches
+# Only MASTER and TEST testing should be run through ISB VPN.
 
-
-def get_auth():
-    auth = {"X-API-AUTH": "APIToken {}".format(settings.API_AUTH_TOKEN)}
-    return auth
-
+test_branch = "LOCAL"
