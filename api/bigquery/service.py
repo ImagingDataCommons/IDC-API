@@ -14,14 +14,10 @@
 # limitations under the License.
 #
 
-from oauth2client.client import flow_from_clientsecrets, GoogleCredentials
+import google.auth as auth
 from googleapiclient import discovery
-from oauth2client.file import Storage
-from oauth2client import tools
-# from django.conf import settings
 import httplib2
-import sys
-
+import google_auth_httplib2
 import logging
 
 logger = logging.getLogger(__name__)
@@ -29,13 +25,10 @@ logger = logging.getLogger(__name__)
 BIGQUERY_SCOPES = ['https://www.googleapis.com/auth/bigquery',
                    'https://www.googleapis.com/auth/bigquery.insertdata']
 
-
-# WJRL 4/25/25 we need to convert this:
 def get_bigquery_service():
-    credentials = GoogleCredentials.get_application_default().create_scoped(BIGQUERY_SCOPES)
+    credentials, project_id = auth.default(scopes=BIGQUERY_SCOPES)
     http = httplib2.Http()
-    http = credentials.authorize(http)
+    http = google_auth_httplib2.AuthorizedHttp(credentials, http=http)
     service = discovery.build('bigquery', 'v2', http=http, cache_discovery=False)
 
     return service
-

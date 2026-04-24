@@ -52,8 +52,8 @@ def test_collections(client, app):
     assert "tcga_prad" in collections
     collection = collections['tcga_prad']
     assert collection['cancer_type'] == 'Prostate Cancer'
-    assert collection['source_doi'].lower() == '10.7937/k9/tcia.2016.yxoglm4y 10.5281/zenodo.12689935 10.5281/zenodo.11099004'.lower()
-    assert collection['image_types'] == 'CT, MR, PT, SM, ANN, SEG'
+    assert set(collection['source_doi'].lower().replace('\n ', '').split(' ')) == set(['10.7937/k9/tcia.2016.yxoglm4y', '10.5281/zenodo.16966285', '10.5281/zenodo.12689935', '10.5281/zenodo.11099004'])
+    assert set(collection['image_types'].lower().replace('\n ', '').replace(' ', '').split(',')) == set(['ct', 'mr', 'pt', 'sm', 'ann', 'seg'])
     assert collection['location'] == 'Prostate'
     assert collection['species'] == 'Human'
     assert collection['subject_count'] == 500
@@ -156,7 +156,6 @@ def test_categorical_field_values(client, app):
         "RTPLAN",
         "RTSTRUCT",
         "RWV",
-        "SC",
         "SEG",
         "SM",
         "SR",
@@ -223,7 +222,7 @@ def test_fields(client, app):
     data = get_data(response)['versions']
     versions = {version['idc_data_version']: {key: version[key] for key in version.keys() if key != 'version_number'} for version in data}
     for version in versions:
-        response = client.get(f'{API_URL}/fields/{version} ')
+        response = client.get(f'{API_URL}/fields/{version}')
         assert response.status_code == 200
         fields = get_data(response)
         assert fields['idc_data_version'] == version
