@@ -26,15 +26,22 @@ SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
 
 main_bp = Blueprint(f'main_bp_{API_VERSION}', __name__, url_prefix='/{}'.format(API_VERSION))
 @main_bp.route('/about/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/versions/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/collections/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/analysis_results/', methods=['GET'], strict_slashes=False)
+@main_bp.route('/filters', methods=['GET'], strict_slashes=False)
+@main_bp.route('/filters/values', methods=['GET'], strict_slashes=False)
+@main_bp.route('/fields', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/manifest/preview', methods=['GET'], strict_slashes=False)
+@main_bp.route('/cohorts/manifest/preview/nextPage', methods=['GET'], strict_slashes=False)
 def about():
-    """Base response"""
     response = jsonify({
-        'code': 200,
-        'message': 'Welcome to the NCI IDC API, Version {}'.format(API_VERSION[1:]),
-        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, settings.API_VERSION) +
-             ' Documentation is available at <https://learn.canceridc.dev/>'
+        'code': 410,
+        'message': 'IDC v2 API endpoints have been deprecated',
+        'documentation': 'The IDC v2 API has been deprecated, and replaced by the IDC v3 API.' +
+                         ' See https://learn.canceridc.dev/api for details of the IDC v3 API'
     })
-    response.status_code = 200
+    response.status_code = 410
     return response
 
 
@@ -47,3 +54,4 @@ def swagger():
 # @main_bp.route('/oauth2callback/', strict_slashes=False)
 def oauth2callback():
     return render_template('swagger/oauth2-redirect.html')
+
