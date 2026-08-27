@@ -28,8 +28,7 @@ def about():
     response = jsonify({
         'code': 410,
         'message': 'IDC v1 API endpoints have been deprecated',
-        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1') +
-                         ' Historical documentation available at <https://learn.canceridc.dev/api/v1-api/>'
+        'documentation': 'SwaggerUI interface available at <{}/{}/swagger/>.'.format(settings.BASE_API_URL, 'v1')
     })
     response.status_code = 410
     return response
