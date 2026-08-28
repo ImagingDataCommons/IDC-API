@@ -4,4 +4,5 @@ httplib2==0.21.0
 pytest~=7.2.1
 python-dotenv~=0.21.1
 requests~=2.32.4
+ruamel.yaml==0.18.11
 Werkzeug==3.1.6
